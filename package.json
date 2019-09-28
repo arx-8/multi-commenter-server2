@@ -1,0 +1,13 @@
+{
+  "name": "multi-commenter-server2",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "netlify-lambda serve resources/api",
+    "build": "netlify-lambda build resources/api",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "netlify-lambda": "1.6.3"
+  }
+}
