@@ -1,1 +1,19 @@
-https://qiita.com/Sr_Bangs/items/7867853f5e71bd4ada56
+# multi-commenter-server
+
+WIP
+
+## Quick Start
+
+```sh
+npm i
+npm start
+```
+
+```http
+POST http://localhost:9000/.netlify/functions/auth_create
+Content-Type: application/json
+
+{
+    "callback_url": "http://localhost"
+}
+```
