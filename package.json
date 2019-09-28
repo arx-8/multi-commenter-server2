@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "netlify-lambda serve resources/api",
-    "build": "netlify-lambda build resources/api",
+    "build": "netlify-lambda build src",
+    "start": "netlify-lambda serve src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "7.6.0",
+    "@types/aws-lambda": "8.10.33",
     "netlify-lambda": "1.6.3"
   }
 }
