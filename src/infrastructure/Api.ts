@@ -1,15 +1,24 @@
 import { OAuth } from "oauth"
 import Twitter from "twitter"
+import {
+  AccessTokenKey,
+  ConsumerKey,
+  ConsumerSecret,
+  OauthTokenKey,
+  OauthTokenSecret,
+  OauthVerifier,
+  AccessTokenSecret,
+} from "../domain/Auth"
 import { PostStatusesUpdateResponse } from "./types/PostStatusesUpdateResponse"
 
 type FetchOAuthTokensParams = {
   callback_url: string
-  consumer_key: string
-  consumer_secret: string
+  consumer_key: ConsumerKey
+  consumer_secret: ConsumerSecret
 }
 type FetchOAuthTokens = {
-  oauth_token: string
-  oauth_token_secret: string
+  oauth_token_key: OauthTokenKey
+  oauth_token_secret: OauthTokenSecret
 }
 
 /**
@@ -30,14 +39,14 @@ export const fetchOAuthTokens = (
   )
 
   return new Promise((resolve, reject) => {
-    oauth.getOAuthRequestToken((error, oauth_token, oauth_token_secret) => {
+    oauth.getOAuthRequestToken((error, oauth_token_key, oauth_token_secret) => {
       if (error) {
         reject(error)
         return
       }
       resolve({
-        oauth_token,
-        oauth_token_secret,
+        oauth_token_key: oauth_token_key as any,
+        oauth_token_secret: oauth_token_secret as any,
       })
     })
   })
@@ -45,20 +54,20 @@ export const fetchOAuthTokens = (
 
 type FetchAccessTokensParams = {
   callback_url: string
-  consumer_key: string
-  consumer_secret: string
-  oauth_token_secret: string
-  oauth_token: string
-  oauth_verifier: string
+  consumer_key: ConsumerKey
+  consumer_secret: ConsumerSecret
+  oauth_token_key: OauthTokenKey
+  oauth_token_secret: OauthTokenSecret
+  oauth_verifier: OauthVerifier
 }
 type FetchAccessTokensResponse = {
-  access_token: string
-  access_token_secret: string
+  access_token_key: AccessTokenKey
+  access_token_secret: AccessTokenSecret
 }
 
 /**
  * oauth_token は使い捨て
- * accessToken を取得すると無効になるらしい
+ * access_token を取得すると無効になるらしい
  * そのため、 API コールには accessToken の方を再利用する必要がある
  */
 export const fetchAccessTokens = async (
@@ -77,17 +86,17 @@ export const fetchAccessTokens = async (
   const accessTokens = await new Promise<FetchAccessTokensResponse>(
     (resolve, reject) => {
       oauth.getOAuthAccessToken(
-        params.oauth_token,
+        params.oauth_token_key,
         params.oauth_token_secret,
         params.oauth_verifier,
-        (error, access_token, access_token_secret) => {
+        (error, access_token_key, access_token_secret) => {
           if (error) {
             reject(error)
             return
           }
           resolve({
-            access_token,
-            access_token_secret,
+            access_token_key: access_token_key as any,
+            access_token_secret: access_token_secret as any,
           })
         }
       )
@@ -98,10 +107,10 @@ export const fetchAccessTokens = async (
 }
 
 type CreateTweetParams = {
-  access_token_key: string
-  access_token_secret: string
-  consumer_key: string
-  consumer_secret: string
+  access_token_key: AccessTokenKey
+  access_token_secret: AccessTokenSecret
+  consumer_key: ConsumerKey
+  consumer_secret: ConsumerSecret
   tweet: string
 }
 

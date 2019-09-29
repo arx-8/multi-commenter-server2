@@ -1,6 +1,11 @@
 import { APIGatewayProxyEvent, Handler } from "aws-lambda"
 import { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } from "./constants/Env"
-import { isValidCallbackUrl } from "./domain/Auth"
+import {
+  isValidCallbackUrl,
+  OauthTokenKey,
+  OauthTokenSecret,
+  OauthVerifier,
+} from "./domain/Auth"
 import { fetchAccessTokens } from "./infrastructure/Api"
 import {
   createAllowCORSResponse,
@@ -11,11 +16,14 @@ import {
 
 type Request = {
   callback_url: string
-  oauth_token_secret: string
-  oauth_token: string
-  oauth_verifier: string
+  oauth_token_key: OauthTokenKey
+  oauth_token_secret: OauthTokenSecret
+  oauth_verifier: OauthVerifier
 }
 
+/**
+ * 再利用可能なアクセストークンの生成
+ */
 export const handler: Handler<APIGatewayProxyEvent, Response> = async (
   event
 ) => {
@@ -37,8 +45,8 @@ export const handler: Handler<APIGatewayProxyEvent, Response> = async (
       callback_url: request.callback_url,
       consumer_key: TWITTER_CONSUMER_KEY,
       consumer_secret: TWITTER_CONSUMER_SECRET,
+      oauth_token_key: request.oauth_token_key,
       oauth_token_secret: request.oauth_token_secret,
-      oauth_token: request.oauth_token,
       oauth_verifier: request.oauth_verifier,
     })
   } catch (error) {
@@ -80,10 +88,11 @@ const validate = (event: APIGatewayProxyEvent): string[] => {
         "undefined"}`
     )
   }
-  const { oauth_token } = parsedBody
-  if (!oauth_token) {
+  const { oauth_token_key } = parsedBody
+  if (!oauth_token_key) {
     errors.push(
-      `Error: Invalid request body. oauth_token=${oauth_token || "undefined"}`
+      `Error: Invalid request body. oauth_token_key=${oauth_token_key ||
+        "undefined"}`
     )
   }
   const { oauth_verifier } = parsedBody

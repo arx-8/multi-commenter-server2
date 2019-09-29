@@ -1,5 +1,6 @@
 import { APIGatewayProxyEvent, Handler } from "aws-lambda"
 import { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } from "./constants/Env"
+import { AccessTokenKey, AccessTokenSecret } from "./domain/Auth"
 import { createTweet } from "./infrastructure/Api"
 import {
   createAllowCORSResponse,
@@ -9,11 +10,14 @@ import {
 } from "./interfaces/Response"
 
 type Request = {
-  access_token_key: string
-  access_token_secret: string
+  access_token_key: AccessTokenKey
+  access_token_secret: AccessTokenSecret
   tweet: string
 }
 
+/**
+ * ツイート投稿
+ */
 export const handler: Handler<APIGatewayProxyEvent, Response> = async (
   event
 ) => {

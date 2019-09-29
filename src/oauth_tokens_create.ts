@@ -13,6 +13,9 @@ type Request = {
   callback_url: string
 }
 
+/**
+ * OAuthトークンの生成
+ */
 export const handler: Handler<APIGatewayProxyEvent, Response> = async (
   event
 ) => {
@@ -45,7 +48,7 @@ export const handler: Handler<APIGatewayProxyEvent, Response> = async (
 
   return createSuccessResponse({
     ...result,
-    authenticate_url: `https://twitter.com/oauth/authenticate?oauth_token=${result.oauth_token}`,
+    authenticate_url: `https://twitter.com/oauth/authenticate?oauth_token=${result.oauth_token_key}`,
   })
 }
 

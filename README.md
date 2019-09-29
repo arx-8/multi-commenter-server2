@@ -24,8 +24,8 @@ Content-Type: application/json
 
 {
     "callback_url": "http://localhost",
+    "oauth_token_key": "",
     "oauth_token_secret": "",
-    "oauth_token": "",
     "oauth_verifier": ""
 }
 
