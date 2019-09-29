@@ -2,37 +2,43 @@ import { OAuth } from "oauth"
 import Twitter from "twitter"
 import { PostStatusesUpdateResponse } from "./types/PostStatusesUpdateResponse"
 
+type FetchOAuthTokensParams = {
+  callback_url: string
+  consumer_key: string
+  consumer_secret: string
+}
+type FetchOAuthTokens = {
+  oauth_token: string
+  oauth_token_secret: string
+}
+
 /**
  * @see http://creator.cotapon.org/articles/node-js/node_js-oauth-twitter
  * @return OAuth authenticate page url
  */
-export const fetchAuthenticateUrl = (
-  consumerKey: string,
-  consumerSecret: string,
-  authorizeCallback: string
-): Promise<string> => {
-  const oa = new OAuth(
+export const fetchOAuthTokens = (
+  params: FetchOAuthTokensParams
+): Promise<FetchOAuthTokens> => {
+  const oauth = new OAuth(
     "https://api.twitter.com/oauth/request_token",
     "https://api.twitter.com/oauth/access_token",
-    consumerKey,
-    consumerSecret,
+    params.consumer_key,
+    params.consumer_secret,
     "1.0",
-    authorizeCallback,
+    params.callback_url,
     "HMAC-SHA1"
   )
 
   return new Promise((resolve, reject) => {
-    oa.getOAuthRequestToken((error, oauthToken, oauthTokenSecret) => {
-      // TODO
-      console.log(oauthTokenSecret)
-
+    oauth.getOAuthRequestToken((error, oauth_token, oauth_token_secret) => {
       if (error) {
         reject(error)
         return
       }
-      resolve(
-        "https://twitter.com/oauth/authenticate?oauth_token=" + oauthToken
-      )
+      resolve({
+        oauth_token,
+        oauth_token_secret,
+      })
     })
   })
 }

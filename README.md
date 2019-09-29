@@ -11,7 +11,7 @@ npm start
 
 ```http
 # 1. Get OAuth tokens
-POST http://localhost:9000/.netlify/functions/auth_create
+POST http://localhost:9000/.netlify/functions/oauth_tokens_create
 Content-Type: application/json
 
 {

@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, Handler } from "aws-lambda"
 import { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } from "./constants/Env"
-import { isValidCallbackUrl } from "./domain/Utils"
+import { isValidCallbackUrl } from "./domain/Auth"
 import { fetchAccessTokens } from "./infrastructure/Api"
 import {
   createAllowCORSResponse,

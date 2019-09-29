@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, Handler } from "aws-lambda"
 import { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } from "./constants/Env"
-import { isValidCallbackUrl } from "./domain/Utils"
-import { fetchAuthenticateUrl } from "./infrastructure/Api"
+import { isValidCallbackUrl } from "./domain/Auth"
+import { fetchOAuthTokens } from "./infrastructure/Api"
 import {
   createAllowCORSResponse,
   createFailedResponse,
@@ -28,13 +28,13 @@ export const handler: Handler<APIGatewayProxyEvent, Response> = async (
 
   const request = JSON.parse(event.body!) as Request
 
-  let authUrl
+  let result
   try {
-    authUrl = await fetchAuthenticateUrl(
-      TWITTER_CONSUMER_KEY,
-      TWITTER_CONSUMER_SECRET,
-      request.callback_url
-    )
+    result = await fetchOAuthTokens({
+      callback_url: request.callback_url,
+      consumer_key: TWITTER_CONSUMER_KEY,
+      consumer_secret: TWITTER_CONSUMER_SECRET,
+    })
   } catch (error) {
     console.log(error)
     return createFailedResponse(
@@ -44,7 +44,8 @@ export const handler: Handler<APIGatewayProxyEvent, Response> = async (
   }
 
   return createSuccessResponse({
-    authenticate_url: authUrl,
+    ...result,
+    authenticate_url: `https://twitter.com/oauth/authenticate?oauth_token=${result.oauth_token}`,
   })
 }
 
