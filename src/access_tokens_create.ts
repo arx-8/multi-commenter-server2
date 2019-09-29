@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, Handler } from "aws-lambda"
 import { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } from "./constants/Env"
 import { isValidCallbackUrl } from "./domain/Utils"
-import { fetchAuthenticateUrl } from "./infrastructure/Api"
+import { fetchAccessTokens } from "./infrastructure/Api"
 import {
   createAllowCORSResponse,
   createFailedResponse,
@@ -11,6 +11,9 @@ import {
 
 type Request = {
   callback_url: string
+  oauth_token_secret: string
+  oauth_token: string
+  oauth_verifier: string
 }
 
 export const handler: Handler<APIGatewayProxyEvent, Response> = async (
@@ -28,24 +31,22 @@ export const handler: Handler<APIGatewayProxyEvent, Response> = async (
 
   const request = JSON.parse(event.body!) as Request
 
-  let authUrl
+  let result
   try {
-    authUrl = await fetchAuthenticateUrl(
-      TWITTER_CONSUMER_KEY,
-      TWITTER_CONSUMER_SECRET,
-      request.callback_url
-    )
+    result = await fetchAccessTokens({
+      callback_url: request.callback_url,
+      consumer_key: TWITTER_CONSUMER_KEY,
+      consumer_secret: TWITTER_CONSUMER_SECRET,
+      oauth_token_secret: request.oauth_token_secret,
+      oauth_token: request.oauth_token,
+      oauth_verifier: request.oauth_verifier,
+    })
   } catch (error) {
     console.log(error)
-    return createFailedResponse(
-      error.statusCode ? error.statusCode : 500,
-      error.data
-    )
+    return createFailedResponse(500, error)
   }
 
-  return createSuccessResponse({
-    authenticate_url: authUrl,
-  })
+  return createSuccessResponse(result)
 }
 
 /**
@@ -70,6 +71,26 @@ const validate = (event: APIGatewayProxyEvent): string[] => {
   if (!isValidCallbackUrl(callback_url)) {
     errors.push(
       `Error: Invalid request body. callback_url=${callback_url || "undefined"}`
+    )
+  }
+  const { oauth_token_secret } = parsedBody
+  if (!oauth_token_secret) {
+    errors.push(
+      `Error: Invalid request body. oauth_token_secret=${oauth_token_secret ||
+        "undefined"}`
+    )
+  }
+  const { oauth_token } = parsedBody
+  if (!oauth_token) {
+    errors.push(
+      `Error: Invalid request body. oauth_token=${oauth_token || "undefined"}`
+    )
+  }
+  const { oauth_verifier } = parsedBody
+  if (!oauth_verifier) {
+    errors.push(
+      `Error: Invalid request body. oauth_verifier=${oauth_verifier ||
+        "undefined"}`
     )
   }
 

@@ -1,7 +1,6 @@
 import { APIGatewayProxyEvent, Handler } from "aws-lambda"
 import { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } from "./constants/Env"
-import { isValidCallbackUrl } from "./domain/Utils"
-import { fetchAuthenticateUrl } from "./infrastructure/Api"
+import { createTweet } from "./infrastructure/Api"
 import {
   createAllowCORSResponse,
   createFailedResponse,
@@ -10,7 +9,9 @@ import {
 } from "./interfaces/Response"
 
 type Request = {
-  callback_url: string
+  access_token_key: string
+  access_token_secret: string
+  tweet: string
 }
 
 export const handler: Handler<APIGatewayProxyEvent, Response> = async (
@@ -28,23 +29,21 @@ export const handler: Handler<APIGatewayProxyEvent, Response> = async (
 
   const request = JSON.parse(event.body!) as Request
 
-  let authUrl
   try {
-    authUrl = await fetchAuthenticateUrl(
-      TWITTER_CONSUMER_KEY,
-      TWITTER_CONSUMER_SECRET,
-      request.callback_url
-    )
+    await createTweet({
+      access_token_key: request.access_token_key,
+      access_token_secret: request.access_token_secret,
+      consumer_key: TWITTER_CONSUMER_KEY,
+      consumer_secret: TWITTER_CONSUMER_SECRET,
+      tweet: request.tweet,
+    })
   } catch (error) {
     console.log(error)
-    return createFailedResponse(
-      error.statusCode ? error.statusCode : 500,
-      error.data
-    )
+    return createFailedResponse(500, error)
   }
 
   return createSuccessResponse({
-    authenticate_url: authUrl,
+    result: "succeeded",
   })
 }
 
@@ -66,11 +65,23 @@ const validate = (event: APIGatewayProxyEvent): string[] => {
 
   const parsedBody = JSON.parse(event.body) as Partial<Request>
 
-  const { callback_url } = parsedBody
-  if (!isValidCallbackUrl(callback_url)) {
+  const { access_token_key } = parsedBody
+  if (!access_token_key) {
     errors.push(
-      `Error: Invalid request body. callback_url=${callback_url || "undefined"}`
+      `Error: Invalid request body. access_token_key=${access_token_key ||
+        "undefined"}`
     )
+  }
+  const { access_token_secret } = parsedBody
+  if (!access_token_secret) {
+    errors.push(
+      `Error: Invalid request body. access_token_secret=${access_token_secret ||
+        "undefined"}`
+    )
+  }
+  const { tweet } = parsedBody
+  if (!tweet) {
+    errors.push(`Error: Invalid request body. tweet=${tweet || "undefined"}`)
   }
 
   return errors
