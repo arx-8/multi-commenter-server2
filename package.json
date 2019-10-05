@@ -13,12 +13,14 @@
     "@types/aws-lambda": "8.10.33",
     "@types/dotenv": "6.1.1",
     "@types/oauth": "0.9.1",
+    "@types/twitter": "1.7.0",
     "netlify-lambda": "1.6.3",
     "typescript": "3.6.3"
   },
   "dependencies": {
     "dotenv": "8.1.0",
     "dotenv-expand": "5.1.0",
-    "oauth": "0.9.15"
+    "oauth": "0.9.15",
+    "twitter": "1.7.1"
   }
 }
