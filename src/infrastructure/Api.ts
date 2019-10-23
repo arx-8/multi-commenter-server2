@@ -120,8 +120,8 @@ export const createTweet = async (
   const client = new Twitter({
     consumer_key: params.consumer_key,
     consumer_secret: params.consumer_secret,
-    access_token_key: "186329838-onMKveVKuE5M1nH6hhw0ZKhkD8HnPNZW2amOUCSv",
-    access_token_secret: "qgAMJzdVdqdOD66HbRB5NSm1fUIWSvwvaw3QuHBGCJMQv",
+    access_token_key: params.access_token_key,
+    access_token_secret: params.access_token_secret,
   })
 
   const resp = await client.post("statuses/update", {
