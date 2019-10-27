@@ -1,13 +1,46 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/512be369-c751-4b63-ba8b-0dba4be84f51/deploy-status)](https://app.netlify.com/sites/multi-commenter-server2/deploys)
+
+---
+
 # multi-commenter-server
 
-WIP
+## Overview
 
-## Quick Start
+- This repository for Back-end of `multi-commenter`.
+- This API is deployed to [Netlify functions](https://docs.netlify.com/functions/overview/).
+- See Front-end docs for details: <https://github.com/arx-8/multi-commenter>
+
+## for Developer
+
+### Quick start
 
 ```sh
+cp -f .env.example .env
 npm i
 npm start
 ```
+
+### Available Scripts
+
+In the project directory, you can run:
+
+#### `npm start`
+
+- Runs the API on <http://localhost:9000>
+- Click here for details: <https://github.com/netlify/netlify-lambda#netlify-lambda-serve-legacy-command>
+
+#### `npm run lint`
+
+Type check only. (No eslint. No implemented yet.)
+
+#### `npm run build`
+
+for deploy to netlify.
+
+#### Try
+
+- Try to call REST API.
+- The following script is in [VSCode REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) format.
 
 ```http
 # 1. Get OAuth tokens
