@@ -10,7 +10,7 @@
 - This API is deployed to [Netlify functions](https://docs.netlify.com/functions/overview/).
 - See Front-end docs for details: <https://github.com/arx-8/multi-commenter>
 
-## for Developer
+## For developer
 
 ### Quick start
 
